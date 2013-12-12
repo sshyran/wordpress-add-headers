@@ -88,6 +88,7 @@ function addh_generate_headers( $post, $mtime, $options ) {
 
     // Expires (Calculated from client access time, aka current time)
     if ( $options['add_expires_header'] === true ) {
+        // See also:  $current_time_gmt = (int) gmdate('U');
         $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
         $headers_arr[] = 'Expires: ' . $header_expires_value;
     }
