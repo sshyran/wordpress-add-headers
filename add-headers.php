@@ -61,4 +61,13 @@ define('ADDH_DIR', dirname(__FILE__));
 
 
 
+function addh_http_headers() {
+    // Always force latest IE rendering engine (even in intranet) & Chrome Frame
+    //header('X-UA-Compatible: IE=edge,chrome=1');
+    // IEMobile
+    //header('Cleartype: on');
+    header('Etag: 1234567890');
+}
+add_action( 'send_headers', 'addh_http_headers' );
+
 ?>
