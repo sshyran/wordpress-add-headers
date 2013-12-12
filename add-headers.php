@@ -60,14 +60,118 @@ define('ADDH_DIR', dirname(__FILE__));
 
 
 
+/**
+ * Returns the modified time for post objects (posts, pages, attachments custom
+ * post types). Two time sources are used:
+ * 1) the post object's modified time.
+ * 2) the modified time of the most recent comment that is attached to the post object.
+ * The most "recent" timestamp is returned.
+ */
+function addh_set_headers_for_object( $options ) {
 
-function addh_http_headers() {
-    // Always force latest IE rendering engine (even in intranet) & Chrome Frame
-    //header('X-UA-Compatible: IE=edge,chrome=1');
-    // IEMobile
-    //header('Cleartype: on');
-    header('Etag: 1234567890');
+    // Get current queried object.
+    $post = get_queried_object();
+    // Valid post types: post, page, attachment
+    if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post', 'page', 'attachment') ) ) {
+        return;
+    }
+
+    // Retrieve stored time of post object
+    $post_mtime = $post->post_modified_gmt;
+    $post_mtime_unix = strtotime( $post_mtime );
+
+    // Initially set the $mtime to the post mtime timestamp
+    $mtime = $post_mtime_unix;
+
+    // If there are comments attached to this post object, find the mtime of
+    // the most recent comment.
+    if ( intval($post->comment_count) > 0 ) {
+
+        // Retrieve the mtime of the most recent comment
+        $comments = get_comments( array(
+            'status' => 'approve',
+            'orderby' => 'comment_date_gmt',
+            'number' => '1',
+            'post_id' => $post->ID
+        ) );
+        if ( ! empty($comments) ) {
+            $comment = $comments[0];
+            $comment_mtime = $comment->comment_date_gmt;
+            $comment_mtime_unix = strtotime( $comment_mtime );
+            // Compare the two mtimes and keep the most recent (higher) one.
+            if ( $comment_mtime_unix > $post_mtime_unix ) {
+                $mtime = $comment_mtime_unix;
+            }
+        }
+    }
+
+    // ETag
+    $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
+    header( 'ETag: ' . $header_etag_value );
+        
+    // Last-Modified
+    $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
+    header( 'Last-Modified: ' . $header_last_modified_value );
+
+    // Expires (Calculated from client access time, aka current time)
+    $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
+    header( 'Expires: ' . $header_expires_value );
+
+    // Cache-Control
+    $default_cache_control_template = 'public, max-age=%s';
+    $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
+    $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
+    header( 'Cache-Control: ' . $header_cache_control_value );
+
 }
-add_action( 'send_headers', 'addh_http_headers' );
+
+
+
+function addh_headers( $buffer ){
+    
+    // Options
+    $default_options = array(
+        'add_etag_header' => true,
+        'add_last_modified_header' => true,
+        'add_expires_header' => true,
+        'add_cache_control_header' => true,
+        'cache_max_age_seconds' => 86400,
+    );
+    $options = apply_filters( 'addh_options', $default_options );
+
+    // Post objects
+    if ( is_singular() ) {
+        addh_set_headers_for_object( $options );
+    }
+// $post = get_queried_object();
+// header('POST: '.$post->ID);
+// header('AAAAAA: bbbbb');
+// header('BUFFER: '.$buffer);
+//if ( is_single() ) {
+//$mtime = addh_get_mtime_for_object();
+//    header('Etag2: '.$mtime);
+//}
+//if ( is_archive() ) {
+//$mtime = addh_get_mtime_for_object();
+//    header('Etag2: IS_ARCHIVE');
+//}
+    return $buffer;
+}
+
+
+// See this page for what this workaround is about:
+// http://stackoverflow.com/questions/12608881/wordpress-redirect-issue-headers-already-sent
+// Possibly related:
+// http://wordpress.stackexchange.com/questions/16547/wordpress-plugin-development-headers-already-sent-message
+// http://stackoverflow.com/questions/8677901/cannot-modify-header-information-with-mail-and-header-php-with-ob-start
+// How WP boots: http://theme.fm/2011/10/wordpress-internals-how-wordpress-boots-up-part-3-2673/
+function addh_add_ob_start(){
+    ob_start('addh_headers');
+}
+function addh_flush_ob_end(){
+    ob_end_flush();
+}
+add_action('init', 'addh_add_ob_start');
+add_action('wp', 'addh_flush_ob_end');
 
 ?>
