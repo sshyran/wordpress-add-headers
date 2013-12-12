@@ -64,8 +64,34 @@ define('ADDH_DIR', dirname(__FILE__));
 /**
  * Generates headers
  */
-function addh_generate_headers( $post ) {
+function addh_generate_headers( $post, $mtime, $options ) {
     $headers_arr = array();
+
+    // ETag
+    $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
+    $headers_arr[] = 'ETag: ' . $header_etag_value;
+        
+    // Last-Modified
+    $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
+    $headers_arr[] = 'Last-Modified: ' . $header_last_modified_value;
+
+    // Expires (Calculated from client access time, aka current time)
+    $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
+    $headers_arr[] = 'Expires: ' . $header_expires_value;
+
+    // Cache-Control
+    $default_cache_control_template = 'public, max-age=%s';
+    $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
+    $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
+    $headers_arr[] = 'Cache-Control: ' . $header_cache_control_value;
+    
+    // Allow filtering of the generated headers
+    $headers_arr = apply_filters( 'addh_headers', $headers_arr );
+
+    // Sent headers
+    foreach ( $headers_arr as $header_data ) {
+        header( $header_data );
+    }
 }
 
 
@@ -115,24 +141,7 @@ function addh_set_headers_for_object( $options ) {
         }
     }
 
-    // ETag
-    $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
-    header( 'ETag: ' . $header_etag_value );
-        
-    // Last-Modified
-    $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
-    header( 'Last-Modified: ' . $header_last_modified_value );
-
-    // Expires (Calculated from client access time, aka current time)
-    $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
-    header( 'Expires: ' . $header_expires_value );
-
-    // Cache-Control
-    $default_cache_control_template = 'public, max-age=%s';
-    $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
-    $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
-    header( 'Cache-Control: ' . $header_cache_control_value );
-
+    addh_generate_headers( $post, $mtime, $options );
 }
 
 
@@ -146,29 +155,16 @@ function addh_set_headers_for_archive( $options ) {
     // There is no need to check for pagination, since every page of the archive
     // has different posts.
     global $post;
+    // Valid post types: post
+    if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post') ) ) {
+        return;
+    }
 
     // Retrieve stored time of post object
     $post_mtime = $post->post_modified_gmt;
     $mtime = strtotime( $post_mtime );
 
-    // ETag
-    $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
-    header( 'ETag: ' . $header_etag_value );
-        
-    // Last-Modified
-    $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
-    header( 'Last-Modified: ' . $header_last_modified_value );
-
-    // Expires (Calculated from client access time, aka current time)
-    $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
-    header( 'Expires: ' . $header_expires_value );
-
-    // Cache-Control
-    $default_cache_control_template = 'public, max-age=%s';
-    $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
-    $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
-    header( 'Cache-Control: ' . $header_cache_control_value );
-
+    addh_generate_headers( $post, $mtime, $options );
 }
 
 
@@ -194,18 +190,6 @@ function addh_headers( $buffer ){
         addh_set_headers_for_archive( $options );
     }
 
-// $post = get_queried_object();
-// header('POST: '.$post->ID);
-// header('AAAAAA: bbbbb');
-// header('BUFFER: '.$buffer);
-//if ( is_single() ) {
-//$mtime = addh_get_mtime_for_object();
-//    header('Etag2: '.$mtime);
-//}
-//if ( is_archive() ) {
-//$mtime = addh_get_mtime_for_object();
-//    header('Etag2: IS_ARCHIVE');
-//}
     return $buffer;
 }
 
