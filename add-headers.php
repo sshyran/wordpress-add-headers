@@ -60,6 +60,16 @@ define('ADDH_DIR', dirname(__FILE__));
 
 
 
+
+/**
+ * Generates headers
+ */
+function addh_generate_headers( $post ) {
+    $headers_arr = array();
+}
+
+
+
 /**
  * Returns the modified time for post objects (posts, pages, attachments custom
  * post types). Two time sources are used:
@@ -126,6 +136,41 @@ function addh_set_headers_for_object( $options ) {
 }
 
 
+/**
+ * Sets headers on archives
+ */
+function addh_set_headers_for_archive( $options ) {
+
+    // On archives, the global post object is the first post of the list.
+    // So, we use this to set the headers for the archive.
+    // There is no need to check for pagination, since every page of the archive
+    // has different posts.
+    global $post;
+
+    // Retrieve stored time of post object
+    $post_mtime = $post->post_modified_gmt;
+    $mtime = strtotime( $post_mtime );
+
+    // ETag
+    $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
+    header( 'ETag: ' . $header_etag_value );
+        
+    // Last-Modified
+    $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
+    header( 'Last-Modified: ' . $header_last_modified_value );
+
+    // Expires (Calculated from client access time, aka current time)
+    $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
+    header( 'Expires: ' . $header_expires_value );
+
+    // Cache-Control
+    $default_cache_control_template = 'public, max-age=%s';
+    $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
+    $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
+    header( 'Cache-Control: ' . $header_cache_control_value );
+
+}
+
 
 function addh_headers( $buffer ){
     
@@ -139,10 +184,16 @@ function addh_headers( $buffer ){
     );
     $options = apply_filters( 'addh_options', $default_options );
 
-    // Post objects
+    // Post objects and Static front page
     if ( is_singular() ) {
         addh_set_headers_for_object( $options );
     }
+    
+    // Archives, Default latest posts front page, Static posts page
+    elseif ( is_archive() || is_home() ) {
+        addh_set_headers_for_archive( $options );
+    }
+
 // $post = get_queried_object();
 // header('POST: '.$post->ID);
 // header('AAAAAA: bbbbb');
