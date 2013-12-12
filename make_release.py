@@ -14,7 +14,7 @@ REL_DIRS = [
 #    'languages',
 ]
 
-PLUGIN_METADATA_FILE = 'add-meta-tags.php'
+PLUGIN_METADATA_FILE = 'add-headers.php'
 
 POT_HEADER = """#  POT (Portable Object Template)
 #
