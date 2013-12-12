@@ -70,7 +70,7 @@ function addh_generate_headers( $post, $mtime, $options ) {
     // ETag
     if ( $options['add_etag_header'] === true ) {
         $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
-        $headers_arr[] = 'ETag: ' . $header_etag_value;
+        $headers_arr[] = sprintf( 'ETag: "%s"', $header_etag_value );
     }
     
     // Last-Modified
