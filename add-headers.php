@@ -65,12 +65,13 @@ define('ADDH_DIR', dirname(__FILE__));
  * Generates headers
  */
 function addh_generate_headers( $post, $mtime, $options ) {
+    global $wp;
+
     $headers_arr = array();
 
     // ETag
     if ( $options['add_etag_header'] === true ) {
-        //$header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
-        $to_hash = array( $mtime, $post->post_date_gmt, $post->guid, $post->post_name, $post->ID );
+        $to_hash = array( $mtime, $post->post_date_gmt, $post->guid, $post->ID, serialize( $wp->query_vars ) );
         $header_etag_value = sha1( serialize( $to_hash ) );
         // Generate a weak or strong ETag
         if ( $options['generate_weak_etag'] === true ) {
