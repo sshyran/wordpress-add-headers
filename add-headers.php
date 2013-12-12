@@ -68,23 +68,32 @@ function addh_generate_headers( $post, $mtime, $options ) {
     $headers_arr = array();
 
     // ETag
-    $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
-    $headers_arr[] = 'ETag: ' . $header_etag_value;
-        
+    if ( $options['add_etag_header'] === true ) {
+        $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
+        $headers_arr[] = 'ETag: ' . $header_etag_value;
+    }
+    
     // Last-Modified
-    $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
-    $headers_arr[] = 'Last-Modified: ' . $header_last_modified_value;
+    if ( $options['add_last_modified_header'] === true ) {
+        $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
+        $headers_arr[] = 'Last-Modified: ' . $header_last_modified_value;
+    }
 
     // Expires (Calculated from client access time, aka current time)
-    $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
-    $headers_arr[] = 'Expires: ' . $header_expires_value;
+    if ( $options['add_expires_header'] === true ) {
+        $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
+        $headers_arr[] = 'Expires: ' . $header_expires_value;
+    }
 
     // Cache-Control
-    $default_cache_control_template = 'public, max-age=%s';
-    $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
-    $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
-    $headers_arr[] = 'Cache-Control: ' . $header_cache_control_value;
-    
+    if ( $options['add_cache_control_header'] === true ) {
+        $default_cache_control_template = 'public, max-age=%s';
+        $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
+        $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
+        $headers_arr[] = 'Cache-Control: ' . $header_cache_control_value;
+    }
+
+
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers', $headers_arr );
 
