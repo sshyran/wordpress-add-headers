@@ -69,8 +69,15 @@ function addh_generate_headers( $post, $mtime, $options ) {
 
     // ETag
     if ( $options['add_etag_header'] === true ) {
-        $header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
-        $headers_arr[] = sprintf( 'ETag: "%s"', $header_etag_value );
+        //$header_etag_value = md5( $mtime . $post->post_date_gmt ) . '.' . md5( $post->guid . $post->post_name . $post->ID );
+        $to_hash = array( $mtime, $post->post_date_gmt, $post->guid, $post->post_name, $post->ID );
+        $header_etag_value = sha1( serialize( $to_hash ) );
+        // Generate a weak or strong ETag
+        if ( $options['generate_weak_etag'] === true ) {
+            $headers_arr[] = sprintf( 'ETag: W/"%s"', $header_etag_value );
+        } else {
+            $headers_arr[] = sprintf( 'ETag: "%s"', $header_etag_value );
+        }
     }
     
     // Last-Modified
@@ -182,6 +189,7 @@ function addh_headers( $buffer ){
     // Options
     $default_options = array(
         'add_etag_header' => true,
+        'generate_weak_etag' => false,
         'add_last_modified_header' => true,
         'add_expires_header' => true,
         'add_cache_control_header' => true,
