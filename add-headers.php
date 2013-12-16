@@ -259,8 +259,15 @@ function addh_headers( $buffer ){
     );
     $options = apply_filters( 'addh_options', $default_options );
 
-    // Post objects and Static front page
-    if ( is_singular() ) {
+    // Feeds
+    if ( is_feed() ) {
+        addh_set_headers_for_feed( $options );
+    }
+
+    // Adds headers to:
+    // - Post objects (posts, pages, attachments, custom post types)
+    // - Static front page
+    elseif ( is_singular() ) {
         addh_set_headers_for_object( $options );
     }
     
