@@ -121,7 +121,7 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
 
 
 /**
- * Generates headers
+ * Generates headers in batch
  */
 function addh_batch_generate_headers( $post, $mtime, $options ) {
     global $wp;
@@ -162,6 +162,8 @@ function addh_set_headers_for_object( $options ) {
     if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post', 'page', 'attachment') ) ) {
         return;
     }
+
+    // TODO: check for password protected posts
 
     // Retrieve stored time of post object
     $post_mtime = $post->post_modified_gmt;
