@@ -255,6 +255,7 @@ function addh_headers( $buffer ){
         'add_expires_header' => true,
         'add_cache_control_header' => true,
         'cache_max_age_seconds' => 86400,
+        'cache_max_age_seconds_for_search_results' => 0,
     );
     $options = apply_filters( 'addh_options', $default_options );
 
