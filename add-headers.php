@@ -59,6 +59,65 @@ define('ADDH_DIR', dirname(__FILE__));
 //load_plugin_textdomain('add-headers', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
 
 
+// Send headers to client
+function addh_send_headers( $headers_arr ) {
+    foreach ( $headers_arr as $header_data ) {
+        $header_data = trim($header_data);
+        if ( ! empty($header_data) ) {
+            header( $header_data );
+        }
+    }
+}
+
+
+// ETag
+function addh_generate_etag_header( $post, $mtime, $options ) {
+    global $wp;
+    if ( $options['add_etag_header'] === true ) {
+        $to_hash = array( $mtime, $post->post_date_gmt, $post->guid, $post->ID, serialize( $wp->query_vars ) );
+        $header_etag_value = sha1( serialize( $to_hash ) );
+        // Generate a weak or strong ETag
+        if ( $options['generate_weak_etag'] === true ) {
+            return sprintf( 'ETag: W/"%s"', $header_etag_value );
+        } else {
+            return sprintf( 'ETag: "%s"', $header_etag_value );
+        }
+    }
+}
+
+
+// Last-Modified
+function addh_generate_last_modified_header( $post, $mtime, $options ) {
+    if ( $options['add_last_modified_header'] === true ) {
+        $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
+        return 'Last-Modified: ' . $header_last_modified_value;
+    }
+}
+
+
+// Expires (Calculated from client access time, aka current time)
+function addh_generate_expires_header( $post, $mtime, $options ) {
+    if ( $options['add_expires_header'] === true ) {
+        // See also:  $current_time_gmt = (int) gmdate('U');
+        $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
+        return 'Expires: ' . $header_expires_value;
+    }
+}
+
+
+// Cache-Control
+function addh_generate_cache_control_header( $post, $mtime, $options ) {
+    if ( $options['add_cache_control_header'] === true ) {
+        if ( intval($options['cache_max_age_seconds']) > 0 ) {
+            $default_cache_control_template = 'public, max-age=%s';
+            $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
+            $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
+            return 'Cache-Control: ' . $header_cache_control_value;
+        } else {
+            return 'Cache-Control: no-cache, must-revalidate, max-age=0';
+        }
+    }
+}
 
 
 /**
