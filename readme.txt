@@ -18,7 +18,7 @@ These HTTP headers are sent to the client when visiting the page of a
 post, page, attachment, custom post type, the front page (static pages are supported)
 or a page of a category, tag, author or date based archive (pagination is supported).
 All feeds (posts feed, comments feed, post comments feed, archive feeds) are supported. 
-Seatch results pages are supported, but are no caching is permitted by default.
+Search result pages are supported, but are no caching is permitted by default.
 
 The value of each header is based on information provided by the post object
 in each of the above pages.
