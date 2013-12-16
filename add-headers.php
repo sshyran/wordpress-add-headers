@@ -219,6 +219,32 @@ function addh_set_headers_for_archive( $options ) {
 }
 
 
+/**
+ * Sets headers on the main feed and main comments feed.
+ *
+ * Note: As of WordPress 3.8 feeds have ETag and Last-Modified headers.
+ * Here we add Expires and Cache-Control.
+ *
+ */
+function addh_set_headers_for_feed( $options ) {
+    $headers_arr = array();
+
+    // Expires (Calculated from client access time, aka current time)
+    $headers_arr[] = addh_generate_expires_header( $post, $mtime, $options );
+    // Cache-Control
+    $headers_arr[] = addh_generate_cache_control_header( $post, $mtime, $options );
+
+    // Allow filtering of the generated headers
+    $headers_arr = apply_filters( 'addh_headers_feed', $headers_arr );
+
+    // Send headers
+    addh_send_headers( $headers_arr );
+}
+
+
+/**
+ * Main function.
+ */
 function addh_headers( $buffer ){
     
     // Options
