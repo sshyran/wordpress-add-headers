@@ -123,62 +123,36 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
 /**
  * Generates headers
  */
-function addh_generate_headers( $post, $mtime, $options ) {
+function addh_batch_generate_headers( $post, $mtime, $options ) {
     global $wp;
 
     $headers_arr = array();
 
     // ETag
-    if ( $options['add_etag_header'] === true ) {
-        $to_hash = array( $mtime, $post->post_date_gmt, $post->guid, $post->ID, serialize( $wp->query_vars ) );
-        $header_etag_value = sha1( serialize( $to_hash ) );
-        // Generate a weak or strong ETag
-        if ( $options['generate_weak_etag'] === true ) {
-            $headers_arr[] = sprintf( 'ETag: W/"%s"', $header_etag_value );
-        } else {
-            $headers_arr[] = sprintf( 'ETag: "%s"', $header_etag_value );
-        }
-    }
-    
+    $headers_arr[] = addh_generate_etag_header( $post, $mtime, $options );
     // Last-Modified
-    if ( $options['add_last_modified_header'] === true ) {
-        $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
-        $headers_arr[] = 'Last-Modified: ' . $header_last_modified_value;
-    }
-
+    $headers_arr[] = addh_generate_last_modified_header( $post, $mtime, $options );
     // Expires (Calculated from client access time, aka current time)
-    if ( $options['add_expires_header'] === true ) {
-        // See also:  $current_time_gmt = (int) gmdate('U');
-        $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
-        $headers_arr[] = 'Expires: ' . $header_expires_value;
-    }
-
+    $headers_arr[] = addh_generate_expires_header( $post, $mtime, $options );
     // Cache-Control
-    if ( $options['add_cache_control_header'] === true ) {
-        $default_cache_control_template = 'public, max-age=%s';
-        $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
-        $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
-        $headers_arr[] = 'Cache-Control: ' . $header_cache_control_value;
-    }
-
-
+    $headers_arr[] = addh_generate_cache_control_header( $post, $mtime, $options );
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers', $headers_arr );
 
-    // Sent headers
-    foreach ( $headers_arr as $header_data ) {
-        header( $header_data );
-    }
+    // Send headers
+    addh_send_headers( $headers_arr );
 }
 
 
 
 /**
- * Returns the modified time for post objects (posts, pages, attachments custom
- * post types). Two time sources are used:
- * 1) the post object's modified time.
- * 2) the modified time of the most recent comment that is attached to the post object.
- * The most "recent" timestamp is returned.
+ * Sets headers on post object pages (posts, pages, attachments custom
+ * post types).
+ *
+ * In order to calculate the modified time, two time sources are used:
+ *   1) the post object's modified time.
+ *   2) the modified time of the most recent comment that is attached to the post object.
+ * The most "recent" timestamp of the two is returned.
  */
 function addh_set_headers_for_object( $options ) {
 
@@ -218,7 +192,7 @@ function addh_set_headers_for_object( $options ) {
         }
     }
 
-    addh_generate_headers( $post, $mtime, $options );
+    addh_batch_generate_headers( $post, $mtime, $options );
 }
 
 
@@ -241,7 +215,7 @@ function addh_set_headers_for_archive( $options ) {
     $post_mtime = $post->post_modified_gmt;
     $mtime = strtotime( $post_mtime );
 
-    addh_generate_headers( $post, $mtime, $options );
+    addh_batch_generate_headers( $post, $mtime, $options );
 }
 
 
