@@ -271,8 +271,15 @@ function addh_headers( $buffer ){
         addh_set_headers_for_object( $options );
     }
     
-    // Archives, Default latest posts front page, Static posts page
-    elseif ( is_archive() || is_home() ) {
+    // Adds headers to:
+    // - Category, tag, author, date based archives
+    // - Search results
+    // - Default front page displaying the latest posts
+    // - Static page displaying the latest posts
+    elseif ( is_archive() || is_search() || is_home() ) {
+        if ( is_search() ) {
+            $options['cache_max_age_seconds'] = $options['cache_max_age_seconds_for_search_results'];
+        }
         addh_set_headers_for_archive( $options );
     }
 
