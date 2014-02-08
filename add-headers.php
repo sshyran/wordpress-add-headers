@@ -224,8 +224,8 @@ function addh_set_headers_for_archive( $options ) {
 /**
  * Sets headers on the main feed and main comments feed.
  *
- * Note: As of WordPress 3.8 feeds have ETag and Last-Modified headers.
- * Here we add Expires and Cache-Control.
+ * Note: At the time of writing, WordPress 3.8 feeds already have ETag and
+ * Last-Modified headers. Here we add Expires and Cache-Control.
  *
  */
 function addh_set_headers_for_feed( $options ) {
