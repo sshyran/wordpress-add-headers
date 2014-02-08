@@ -3,7 +3,7 @@ Contributors: gnotaras
 Tags: cache, http, headers, web, server, response, optimize, expires, cache-control, last-modified, etag, if-modified-since, if-none-match, if-match, if-range
 Requires at least: 3.1.0
 Tested up to: 3.8.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -129,5 +129,9 @@ No screenshots are available at this time.
 
 Please check out the changelog of each release by following the links below. You can also check the [roadmap](http://www.codetrax.org/projects/wp-add-headers/roadmap "Add-Headers Roadmap") regarding future releases of the plugin.
 
-TODO
+- [1.0.5](http://www.codetrax.org/versions/211)
+- [1.0.4](http://www.codetrax.org/versions/210)
+- [1.0.3](http://www.codetrax.org/versions/209)
+- [1.0.2](http://www.codetrax.org/versions/208)
+- [1.0.1](http://www.codetrax.org/versions/203)
 
