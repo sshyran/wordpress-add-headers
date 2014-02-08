@@ -2,7 +2,7 @@
 Contributors: gnotaras
 Tags: cache, http, headers, web, server, response, optimize, expires, cache-control, last-modified, etag, if-modified-since, if-none-match, if-match, if-range
 Requires at least: 3.1.0
-Tested up to: 3.8
+Tested up to: 3.8.1
 Stable tag: 1.0.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
