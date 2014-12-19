@@ -59,16 +59,6 @@ define('ADDH_DIR', dirname(__FILE__));
 //load_plugin_textdomain('add-headers', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
 
 
-// Send headers to client
-function addh_send_headers( $headers_arr ) {
-    foreach ( $headers_arr as $header_data ) {
-        $header_data = trim($header_data);
-        if ( ! empty($header_data) ) {
-            header( $header_data );
-        }
-    }
-}
-
 
 // ETag
 function addh_generate_etag_header( $post, $mtime, $options ) {
@@ -123,24 +113,21 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
 /**
  * Generates headers in batch
  */
-function addh_batch_generate_headers( $post, $mtime, $options ) {
+function addh_batch_generate_headers( $post, $mtime, $headers, $options ) {
     global $wp;
 
-    $headers_arr = array();
-
     // ETag
-    $headers_arr[] = addh_generate_etag_header( $post, $mtime, $options );
+    $headers[] = addh_generate_etag_header( $post, $mtime, $options );
     // Last-Modified
-    $headers_arr[] = addh_generate_last_modified_header( $post, $mtime, $options );
+    $headers[] = addh_generate_last_modified_header( $post, $mtime, $options );
     // Expires (Calculated from client access time, aka current time)
-    $headers_arr[] = addh_generate_expires_header( $post, $mtime, $options );
+    $headers[] = addh_generate_expires_header( $post, $mtime, $options );
     // Cache-Control
-    $headers_arr[] = addh_generate_cache_control_header( $post, $mtime, $options );
+    $headers[] = addh_generate_cache_control_header( $post, $mtime, $options );
     // Allow filtering of the generated headers
-    $headers_arr = apply_filters( 'addh_headers', $headers_arr );
+    $headers = apply_filters( 'addh_headers', $headers );
 
-    // Send headers
-    addh_send_headers( $headers_arr );
+    return $headers;
 }
 
 
@@ -154,13 +141,13 @@ function addh_batch_generate_headers( $post, $mtime, $options ) {
  *   2) the modified time of the most recent comment that is attached to the post object.
  * The most "recent" timestamp of the two is returned.
  */
-function addh_set_headers_for_object( $options ) {
+function addh_set_headers_for_object( $headers, $options ) {
 
     // Get current queried object.
     $post = get_queried_object();
     // Valid post types: post, page, attachment
     if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post', 'page', 'attachment') ) ) {
-        return;
+        return $headers;
     }
 
     // TODO: check for password protected posts
@@ -194,30 +181,35 @@ function addh_set_headers_for_object( $options ) {
         }
     }
 
-    addh_batch_generate_headers( $post, $mtime, $options );
+    $headers = addh_batch_generate_headers( $post, $mtime, $headers, $options );
+
+    return $headers;
 }
 
 
 /**
  * Sets headers on archives
  */
-function addh_set_headers_for_archive( $options ) {
+function addh_set_headers_for_archive( $headers, $options ) {
 
     // On archives, the global post object is the first post of the list.
     // So, we use this to set the headers for the archive.
     // There is no need to check for pagination, since every page of the archive
     // has different posts.
     global $post;
+
     // Valid post types: post
     if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post') ) ) {
-        return;
+        return $headers;
     }
 
     // Retrieve stored time of post object
     $post_mtime = $post->post_modified_gmt;
     $mtime = strtotime( $post_mtime );
 
-    addh_batch_generate_headers( $post, $mtime, $options );
+    $headers = addh_batch_generate_headers( $post, $mtime, $headers, $options );
+
+    return $headers;
 }
 
 
@@ -228,26 +220,24 @@ function addh_set_headers_for_archive( $options ) {
  * Last-Modified headers. Here we add Expires and Cache-Control.
  *
  */
-function addh_set_headers_for_feed( $options ) {
-    $headers_arr = array();
+function addh_set_headers_for_feed( $headers, $options ) {
 
     // Expires (Calculated from client access time, aka current time)
-    $headers_arr[] = addh_generate_expires_header( $post, $mtime, $options );
+    $headers[] = addh_generate_expires_header( $post, $mtime, $options );
     // Cache-Control
-    $headers_arr[] = addh_generate_cache_control_header( $post, $mtime, $options );
+    $headers[] = addh_generate_cache_control_header( $post, $mtime, $options );
 
     // Allow filtering of the generated headers
-    $headers_arr = apply_filters( 'addh_headers_feed', $headers_arr );
+    $headers = apply_filters( 'addh_headers_feed', $headers );
 
-    // Send headers
-    addh_send_headers( $headers_arr );
+    return $headers;
 }
 
 
 /**
  * Main function.
  */
-function addh_headers( $buffer ){
+function addh_headers( $headers, $ccc ){
     
     // Options
     $default_options = array(
@@ -261,16 +251,30 @@ function addh_headers( $buffer ){
     );
     $options = apply_filters( 'addh_options', $default_options );
 
+/*
+    global $wp;
+    global $post;
+    //global $this;
+    //$post = get_queried_object();
+    ob_start();
+    var_dump($ccc);
+    $result = ob_get_clean();
+    //$headers['ADD-HEADERS-DEBUG'] = strlen($result);
+    // 'Object: ' . $post->ID . ' ||| ' . $result;
+$myfile = fopen('/var/www/vhosts/wordpress/public_html/wp-content/plugins/add-headers/addh.log', 'w');
+fwrite($myfile, $result);
+fclose($myfile);
+*/
     // Feeds
     if ( is_feed() ) {
-        addh_set_headers_for_feed( $options );
+        $headers = addh_set_headers_for_feed( $headers, $options );
     }
 
     // Adds headers to:
     // - Post objects (posts, pages, attachments, custom post types)
     // - Static front page
     elseif ( is_singular() ) {
-        addh_set_headers_for_object( $options );
+        $headers = addh_set_headers_for_object( $headers, $options );
     }
     
     // Adds headers to:
@@ -282,26 +286,15 @@ function addh_headers( $buffer ){
         if ( is_search() ) {
             $options['cache_max_age_seconds'] = $options['cache_max_age_seconds_for_search_results'];
         }
-        addh_set_headers_for_archive( $options );
+        $headers = addh_set_headers_for_archive( $headers, $options );
     }
 
-    return $buffer;
+    // Testing
+    //$headers['AAAAA'] = 'BBBBB';
+
+    return $headers;
 }
 
-
-// See this page for what this workaround is about:
-// http://stackoverflow.com/questions/12608881/wordpress-redirect-issue-headers-already-sent
-// Possibly related:
-// http://wordpress.stackexchange.com/questions/16547/wordpress-plugin-development-headers-already-sent-message
-// http://stackoverflow.com/questions/8677901/cannot-modify-header-information-with-mail-and-header-php-with-ob-start
-// How WP boots: http://theme.fm/2011/10/wordpress-internals-how-wordpress-boots-up-part-3-2673/
-function addh_add_ob_start(){
-    ob_start('addh_headers');
-}
-function addh_flush_ob_end(){
-    ob_end_flush();
-}
-add_action('init', 'addh_add_ob_start');
-add_action('wp', 'addh_flush_ob_end');
+add_filter('wp_headers', 'addh_headers', 1000, 2);
 
 ?>
