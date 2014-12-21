@@ -59,6 +59,34 @@ define('ADDH_DIR', dirname(__FILE__));
 //load_plugin_textdomain('add-headers', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
 
 
+// Helper function that returns an array of supported post types when is_singular()
+function addh_get_supported_post_types_singular() {
+    $supported_builtin_types = array('post', 'page', 'attachment');
+    //$public_custom_types = get_post_types( array('public'=>true, '_builtin'=>false, 'show_ui'=>true) );
+    $public_custom_types = get_post_types( array('public'=>true, '_builtin'=>false) );
+    $supported_types = array_merge($supported_builtin_types, $public_custom_types);
+
+    // Allow filtering of the supported content types.
+    $supported_types = apply_filters( 'amt_supported_post_types_singular', $supported_types );
+
+    return $supported_types;
+}
+
+
+// Helper function that returns an array of supported post types when is_archive()
+function addh_get_supported_post_types_archive() {
+    $supported_builtin_types = array('post');
+    //$public_custom_types = get_post_types( array('public'=>true, '_builtin'=>false, 'show_ui'=>true) );
+    $public_custom_types = get_post_types( array('public'=>true, '_builtin'=>false) );
+    $supported_types = array_merge($supported_builtin_types, $public_custom_types);
+
+    // Allow filtering of the supported content types.
+    $supported_types = apply_filters( 'amt_supported_post_types_archive', $supported_types );
+
+    return $supported_types;
+}
+
+
 // Send headers to client
 function addh_send_headers( $headers_arr ) {
     foreach ( $headers_arr as $header_data ) {
