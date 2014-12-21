@@ -247,7 +247,7 @@ function addh_set_headers_for_archive( $options ) {
     $post = apply_filters( 'addh_archive_post', $post )
 
     // Valid post types: post
-    if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post') ) ) {
+    if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), addh_get_supported_post_types_archive() ) ) {
         return;
     }
 
