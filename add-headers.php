@@ -302,6 +302,7 @@ function addh_flush_ob_end(){
     ob_end_flush();
 }
 add_action('init', 'addh_add_ob_start');
-add_action('wp', 'addh_flush_ob_end');
+//add_action('wp', 'addh_flush_ob_end');
+add_action('wp_footer', 'addh_flush_ob_end');
 
 ?>
