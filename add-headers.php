@@ -246,7 +246,7 @@ function addh_set_headers_for_archive( $options ) {
 
     // The post object we use for the HTTP headers is the latest post.
     // Here it is possible to filter this post object and use what you want.
-    $post = apply_filters( 'addh_archive_post', $post )
+    $post = apply_filters( 'addh_archive_post', $post );
 
     // Valid post types: post
     if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), addh_get_supported_post_types_archive() ) ) {
