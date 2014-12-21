@@ -174,7 +174,7 @@ function addh_batch_generate_headers( $post, $mtime, $options ) {
 
 
 /**
- * Sets headers on post object pages (posts, pages, attachments custom
+ * Sets headers on post object pages (posts, pages, attachments, custom
  * post types).
  *
  * In order to calculate the modified time, two time sources are used:
@@ -186,12 +186,15 @@ function addh_set_headers_for_object( $options ) {
 
     // Get current queried object.
     $post = get_queried_object();
-    // Valid post types: post, page, attachment
-    if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post', 'page', 'attachment') ) ) {
+    // Valid post types: post, page, attachment, public custom post types
+    if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), addh_get_supported_post_types_singular() ) ) {
         return;
     }
 
-    // TODO: check for password protected posts
+    // Check for password protected posts
+    if ( post_password_required() ) {
+        return;
+    }
 
     // Retrieve stored time of post object
     $post_mtime = $post->post_modified_gmt;
