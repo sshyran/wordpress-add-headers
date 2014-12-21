@@ -152,7 +152,6 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
  * Generates headers in batch
  */
 function addh_batch_generate_headers( $post, $mtime, $options ) {
-    global $wp;
 
     $headers_arr = array();
 
