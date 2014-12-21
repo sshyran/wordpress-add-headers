@@ -232,9 +232,9 @@ function addh_set_headers_for_feed( $options ) {
     $headers_arr = array();
 
     // Expires (Calculated from client access time, aka current time)
-    $headers_arr[] = addh_generate_expires_header( $post, $mtime, $options );
+    $headers_arr[] = addh_generate_expires_header( null, null, $options );
     // Cache-Control
-    $headers_arr[] = addh_generate_cache_control_header( $post, $mtime, $options );
+    $headers_arr[] = addh_generate_cache_control_header( null, null, $options );
 
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers_feed', $headers_arr );
