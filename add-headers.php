@@ -203,11 +203,17 @@ function addh_set_headers_for_object( $options ) {
  */
 function addh_set_headers_for_archive( $options ) {
 
-    // On archives, the global post object is the first post of the list.
-    // So, we use this to set the headers for the archive.
+    // WordPress archives list the posts that belong to the archive from
+    // newest to oldest. We set the HTTP headers for the archive page based
+    // on the first post of the archive (newest).
     // There is no need to check for pagination, since every page of the archive
     // has different posts.
-    global $post;
+    //global $post; // Using this is possibly a mistake. This should be term/author/date object of the archive.
+
+    // Get our post object from the list of posts.
+    global $posts;
+    $post = $posts[0];
+
     // Valid post types: post
     if ( ! is_object($post) || ! isset($post->post_type) || ! in_array( get_post_type($post), array('post') ) ) {
         return;
@@ -274,7 +280,7 @@ function addh_headers( $buffer ){
     }
     
     // Adds headers to:
-    // - Category, tag, author, date based archives
+    // - Category, tag, author, date based archives, custom taxonomy arechives.
     // - Search results
     // - Default front page displaying the latest posts
     // - Static page displaying the latest posts
