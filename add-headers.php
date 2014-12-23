@@ -99,6 +99,9 @@ function addh_send_headers( $headers_arr ) {
 
 
 // ETag
+// The generated ETag is unique for every post page. In order to generate it
+// ``$wp->query_vars`` are used among other properties so as to generate a
+// unique ETag even for archive on which the latest post is the same.
 function addh_generate_etag_header( $post, $mtime, $options ) {
     global $wp;
     if ( $options['add_etag_header'] === true ) {
