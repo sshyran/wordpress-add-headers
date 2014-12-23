@@ -67,7 +67,7 @@ function addh_get_supported_post_types_singular() {
     $supported_types = array_merge($supported_builtin_types, $public_custom_types);
 
     // Allow filtering of the supported content types.
-    $supported_types = apply_filters( 'amt_supported_post_types_singular', $supported_types );
+    $supported_types = apply_filters( 'addh_supported_post_types_singular', $supported_types );
 
     return $supported_types;
 }
@@ -81,7 +81,7 @@ function addh_get_supported_post_types_archive() {
     $supported_types = array_merge($supported_builtin_types, $public_custom_types);
 
     // Allow filtering of the supported content types.
-    $supported_types = apply_filters( 'amt_supported_post_types_archive', $supported_types );
+    $supported_types = apply_filters( 'addh_supported_post_types_archive', $supported_types );
 
     return $supported_types;
 }
