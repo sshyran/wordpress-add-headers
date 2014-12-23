@@ -5,7 +5,7 @@ REL_FILES = [
 	'add-headers.php',
     'AUTHORS',
 	'LICENSE',
-	'README',
+#	'README',
     'readme.txt',
     'uninstall.php',
 ]
