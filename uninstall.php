@@ -33,9 +33,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if ( !defined( 'ABSPATH') && !defined('WP_UNINSTALL_PLUGIN') ) {
-    exit();
- }
+// Prevent direct access to this file.
+if ( ! defined( 'ABSPATH' ) ) {
+    header( 'HTTP/1.0 403 Forbidden' );
+    echo 'This file should not be accessed directly!';
+    exit; // Exit if accessed directly
+}
 
 // Currently no stored options
 //delete_option('add_headers_opts');
