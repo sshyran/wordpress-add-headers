@@ -51,10 +51,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Store plugin directory
-define( 'ADDH_DIR', plugin_dir_path( __FILE__ ) );
+define( 'ADDH_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+// Store plugin main file path
+define( 'ADDH_PLUGIN_FILE', __FILE__ );
 
 // Import modules
-//require_once( ADDH_DIR . 'addh-settings.php' );
+//require_once( ADDH_PLUGIN_DIR . 'addh-settings.php' );
 
 
 /**
