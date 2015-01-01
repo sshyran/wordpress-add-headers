@@ -4,7 +4,7 @@ Donate link: http://bit.ly/wp-add-headers
 Tags: cache, http, headers, web, server, response, optimize, expires, cache-control, last-modified, etag, if-modified-since, if-none-match, if-match, if-range, caching, bandwidth, server load, cpu load
 Requires at least: 3.1.0
 Tested up to: 4.2
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -153,6 +153,7 @@ No screenshots are available at this time.
 
 Please check out the changelog of each release by following the links below. You can also check the [roadmap](http://www.codetrax.org/projects/wp-add-headers/roadmap "Add-Headers Roadmap") regarding future releases of the plugin.
 
+- [1.1.2](http://www.codetrax.org/versions/235)
 - [1.1.1](http://www.codetrax.org/versions/217)
  - Bug fix: In 1.1.0 two new filters had been added with wrong prefix in their names. This has been fixed in 1.1.1.
 - [1.1.0](http://www.codetrax.org/versions/212)
