@@ -3,6 +3,7 @@
 
 REL_FILES = [
 	'add-headers.php',
+    'index.php',
     'AUTHORS',
 	'LICENSE',
 #	'README',
