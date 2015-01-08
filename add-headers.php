@@ -159,6 +159,22 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
 }
 
 
+// Pragma
+// This header is set to either `no-cache` or `cache` for HTTP 1.0 compatibility.
+// The same checks take place as for the Cache-Control header.
+// The addition of this header is controlled by the `add_cache_control_header` option.
+// No separate option should be required for this header.
+function addh_generate_pragma_header( $post, $mtime, $options ) {
+    if ( $options['add_cache_control_header'] === true ) {
+        if ( intval($options['cache_max_age_seconds']) > 0 ) {
+            return 'Pragma: cache';
+        } else {
+            return 'Pragma: no-cache';
+        }
+    }
+}
+
+
 /**
  * Generates headers in batch
  */
@@ -174,6 +190,8 @@ function addh_batch_generate_headers( $post, $mtime, $options ) {
     $headers_arr[] = addh_generate_expires_header( $post, $mtime, $options );
     // Cache-Control
     $headers_arr[] = addh_generate_cache_control_header( $post, $mtime, $options );
+    // Pragma
+    $headers_arr[] = addh_generate_pragma_header( $post, $mtime, $options );
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers', $headers_arr );
 
@@ -286,6 +304,8 @@ function addh_set_headers_for_feed( $options ) {
     $headers_arr[] = addh_generate_expires_header( null, null, $options );
     // Cache-Control
     $headers_arr[] = addh_generate_cache_control_header( null, null, $options );
+    // Pragma
+    $headers_arr[] = addh_generate_pragma_header( null, null, $options );
 
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers_feed', $headers_arr );

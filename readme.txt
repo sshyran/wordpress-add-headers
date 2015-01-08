@@ -43,6 +43,10 @@ By default, the expiration date of each page is set to one day (86400 seconds)
 after the time the client accessed the resource, but this is configurable
 (see *configuration* section).
 
+In addition to the *Cache-Control* header, the plugin also sets the *Pragma*
+header to `cache` or `no-cache` according to the defined `max-age` of the
+*Cache-Control* header.
+
 = Free License and Donations =
 
 *Add-Headers* is released under the terms of the <a href="http://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License version 3</a> and, therefore, is **Free Software**.
