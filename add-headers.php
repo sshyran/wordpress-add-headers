@@ -309,8 +309,14 @@ function addh_headers( $buffer ){
         'add_cache_control_header' => true,
         'cache_max_age_seconds' => 86400,
         'cache_max_age_seconds_for_search_results' => 0,
+        'cache_max_age_seconds_for_authenticated_users' => 0,
     );
     $options = apply_filters( 'addh_options', $default_options );
+
+    // Adjust `cache_max_age_seconds` for authenticated users.
+    if ( is_user_logged_in() ) {
+        $options['cache_max_age_seconds'] = $options['cache_max_age_seconds_for_authenticated_users'];
+    }
 
     // Feeds
     if ( is_feed() ) {
