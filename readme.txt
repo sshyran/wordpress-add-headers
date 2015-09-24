@@ -1,7 +1,7 @@
 === Add Headers ===
 Contributors: gnotaras
 Donate link: http://bit.ly/wp-add-headers
-Tags: cache, http, headers, web, server, response, optimize, expires, cache-control, last-modified, etag, if-modified-since, if-none-match, if-match, if-range, caching, bandwidth, server load, cpu load
+Tags: cache, http, headers, web, server, response, optimize, expires, cache-control, last-modified, etag, if-modified-since, if-none-match, if-match, if-range, caching, bandwidth, server load, cpu load, seo
 Requires at least: 3.1.0
 Tested up to: 4.2
 Stable tag: 1.2.0
