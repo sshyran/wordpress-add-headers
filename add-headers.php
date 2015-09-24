@@ -271,6 +271,9 @@ function addh_set_headers_for_archive( $options ) {
 
     // Get our post object from the list of posts.
     global $posts;
+    if ( empty($posts) ) {
+        return;
+    }
     $post = $posts[0];
 
     // The post object we use for the HTTP headers is the latest post.
