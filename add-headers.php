@@ -183,15 +183,15 @@ function addh_batch_generate_headers( $post, $mtime, $options ) {
     $headers_arr = array();
 
     // ETag
-    $headers_arr[] = addh_generate_etag_header( $post, $mtime, $options );
+    $headers_arr['etag'] = addh_generate_etag_header( $post, $mtime, $options );
     // Last-Modified
-    $headers_arr[] = addh_generate_last_modified_header( $post, $mtime, $options );
+    $headers_arr['last-modified'] = addh_generate_last_modified_header( $post, $mtime, $options );
     // Expires (Calculated from client access time, aka current time)
-    $headers_arr[] = addh_generate_expires_header( $post, $mtime, $options );
+    $headers_arr['expires'] = addh_generate_expires_header( $post, $mtime, $options );
     // Cache-Control
-    $headers_arr[] = addh_generate_cache_control_header( $post, $mtime, $options );
+    $headers_arr['cache-control'] = addh_generate_cache_control_header( $post, $mtime, $options );
     // Pragma
-    $headers_arr[] = addh_generate_pragma_header( $post, $mtime, $options );
+    $headers_arr['pragma'] = addh_generate_pragma_header( $post, $mtime, $options );
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers', $headers_arr );
 
@@ -301,11 +301,11 @@ function addh_set_headers_for_feed( $options ) {
     $headers_arr = array();
 
     // Expires (Calculated from client access time, aka current time)
-    $headers_arr[] = addh_generate_expires_header( null, null, $options );
+    $headers_arr['expires'] = addh_generate_expires_header( null, null, $options );
     // Cache-Control
-    $headers_arr[] = addh_generate_cache_control_header( null, null, $options );
+    $headers_arr['cache-control'] = addh_generate_cache_control_header( null, null, $options );
     // Pragma
-    $headers_arr[] = addh_generate_pragma_header( null, null, $options );
+    $headers_arr['pragma'] = addh_generate_pragma_header( null, null, $options );
 
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers_feed', $headers_arr );
