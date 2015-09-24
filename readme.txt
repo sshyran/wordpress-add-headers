@@ -84,8 +84,12 @@ Thank you in advance for **donating**!
 
 = Configuration =
 
-The plugin can be configured by filtering the options array. You can add a
-filtering function like the following in the `functions.php` file of your theme:
+This plugin does not have an administration interface so as to maintain the
+maximum level of flexibility when configuring it.
+
+The plugin can be configured by attaching a filtering function to the `addh_options` hook
+which returns an array containing the `options` that should be used for the current request. 
+The code can be added in the `functions.php` file of the theme or in another plugin:
 
 `
 function addh_custom_options ( $options ) {
@@ -107,7 +111,7 @@ add_filter( 'addh_options', 'addh_custom_options', 10, 1 );
 The settings above demonstrate the default values.
 
 By setting any of the *max-age* settings to `0`, a `Cache-Control: no-cache, must-revalidate, max-age=0`
-header is sent. `cache_max_age_seconds_for_search_results` only affects search
+header is sent to the client. `cache_max_age_seconds_for_search_results` only affects search
 results. `cache_max_age_seconds` affects all pages. If you need more customization,
 it is possible to filter the headers before they are sent to the client (see *Available Filters* section).
  
