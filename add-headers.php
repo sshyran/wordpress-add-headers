@@ -167,7 +167,7 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
 function addh_generate_pragma_header( $post, $mtime, $options ) {
     if ( $options['add_cache_control_header'] === true ) {
         if ( intval($options['cache_max_age_seconds']) > 0 ) {
-            return 'Pragma: cache';
+            return 'Pragma: public';
         } else {
             return 'Pragma: no-cache';
         }
