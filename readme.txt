@@ -152,11 +152,11 @@ No special requirements when upgrading.
 
 = What is the target audience of this plugin? =
 
-This plugin exists strictly for people who know exactly what they are doing.
+This plugin exists only for people who know exactly what they are doing.
 
 = What knowledge is required before being able to understand what this plugin is doing? =
 
-Before using this plugin or asking for support, it is mandatory to be able to fully understand the following terms:
+Before using this plugin or asking for support, it is **mandatory** to be able to **fully understand** the following terms:
 
  * HTTP protocol
  * HTTP request/response
@@ -169,53 +169,71 @@ Before using this plugin or asking for support, it is mandatory to be able to fu
  * Expires header
  * Web/HTTP Cache
 
-Moreover, it is mandatory to know how to check the HTTP response headers, as returned by the web server, to which you have sent the HTTP request.
+Moreover, it is mandatory to know how to **check the HTTP response headers**, as returned by the web server, to which you have sent the HTTP request.
 
-Last but not least, it is mandatory to know how to check your web server's error log.
+Being able to **edit a PHP file**, such as the `functions.php` file of your theme, is necessary in case you need to configure the plugin in a custom way.
 
-If you lack in ANY of the above things, please DO NOT USE this plugin and DO NOT RATE it. Add-Headers is not for you.
+Last but not least, it is mandatory to know how to **check your web server's error log**.
+
+If you lack in ANY of the above things, please DO NOT USE this plugin and please DO NOT RATE it. Add-Headers is not the right plugin for you.
 
 = Does this plugin just work? =
 
-Yes. Despite all the mandatory requirements in knowledge, this plugin has been designed to just work. The default options have sensible default values that should work for the vast majority of web sites.
+Yes. Despite all the mandatory requirements in knowledge, this plugin has been designed to just work. The default options have sensible default values that should work for the vast majority of web sites. However, if your web site includes pages 
+
+= If it just works, why do I still have to meet the requirements in knowledge? =
+
+The fact that the plugin has been designed to *just work* does not mean that you are getting any guarantee that it is actually going to work on your platform. The plugin has been tested on a clean WordPress installation using the most modern default theme.
+
+In order to be able to check whether the plugin is working fine on your platform or not, meeting the mandatory requirements in knowledge, as listed above, is absolutely necessary. If this is not the case, this plugin is not for you, even if it *just works*.
+
+Besides, if your web site contains special web pages, like contact forms and shopping carts, you will need to configure the plugin according to your web site's special needs, which makes meeting the requirements in knowledge absolutely necessary.
 
 = I cannot find the settings page! =
 
-This is because there isn't a settings page in the WordPress administration panel. The plugin can be configured by adding a small code snippet in the `functions.php` file of the theme or in a custom plugin.
+This is because there isn't a settings page in the WordPress administration panel. However, the plugin can be configured by adding a small code snippet in the `functions.php` file of the theme or in a custom plugin.
 
-There are absolutely no plans to implement a settings page in future releases. This feature is out of the question. Please do not rate the plugin for something that is clearly not offered or planned.
-
-Please study the 'Description' page for information about the plugin options.
+There are no plans to implement a settings page in future releases. This happens because we need a great amount of flexibility which cannot be offered by a web based user interface. Nevertheless, configuration requires very basic coding skills. Please check the description page for more details about the available settings and sample code.
 
 = How do I know if the plugin is working? It does not notify me in any way! =
 
-The plugin won't raise any fancy popups telling you that it's working! You will have to check the actual HTTP response headers. Knowing how to do it is a mandatory requirement and is beyond the scope of the support that can be provided to you by the plugin author.
+By design, this plugin won't notify you about anything. You will have to check the actual HTTP response headers. Knowing how to do it is a mandatory requirement and is beyond the scope of the support that can be provided to you by the plugin author. However, you can easily find relevant tutorials and online or offline tools to help you with this.
+
+The description page contains some simple instructions about how to do some basic testing using `curl`.
 
 = How can I customize the options or the plugin functionality? =
 
-Please study the 'Description' page.
+Please study the 'Description' page. All the information you need exists there.
 
 The plugin options can be customized by adding a small code snippet in the `functions.php` file of your theme. Moreover, the plugin functionality can be further customized by attaching filtering functions to the available filter hooks.
 
+= I've activated your plugin and my contact form and shopping cart stopped working! =
+
+Add-Headers, by default, makes your web pages cacheable for 86400 seconds (1 day). Consequently, special web pages that might contain elements which must be refreshed on every visit, like captchas and shopping carts, are not going to work correctly with the default settings. It is required to set the `cache_max_age_seconds` option to zero for those pages, so as to prevent them from being cached by caching proxies and web browsers. Please, make sure you check out the configuration examples on the description page.
+
 = I get a PHP warning: 'Cannot modify header information - headers already sent' =
 
-This warning is not due to a programming error in the Add-Headers code. It happens because output buffering gets closed by another plugin or other custom code before Add-Headers sents the HTTP headers to the client. The path to the Add-Headers PHP script may appear in the warning message, but the real cause of the problem is 3rd party code.
+This warning does *not* occur due to a programming error in the Add-Headers code. It happens because output buffering gets closed by another plugin or other custom code before Add-Headers sents the HTTP headers to the client.
 
-It is impossible to guess what part of your 3rd party code causes this problem. It depends on other plugins you use or other custom code. Thorough investigation is required.
+It is impossible to guess what part of your 3rd party code causes this problem. It depends on other plugins you use or other custom code. Thorough investigation of the warning messages that have been recorded in the web server's error log is required.
 
 Start by reading the following [analysis](http://stackoverflow.com/questions/8028957/how-to-fix-headers-already-sent-error-in-php/8028987#8028987) of the problem.
 
 Also, please use the forum to report such incidents and hopefully work with the plugin author to resolve them.
 
-Please DO NOT rate the plugin based on this warning. This is not a problem of the plugin itself. It has to do with the way PHP processes the HTTP response headers and the actual response body and the way WordPress and the various plugins generate them.
+Please DO NOT rate the plugin based on this warning. This is not a problem of the plugin itself. It has to do with the way PHP sends the HTTP response headers and the actual response body to the web server and also with the way WordPress and the various plugins generate them.
 
 = I've added a low star rating in order to motivate you! Why don't you help me or not implement the feature I want? =
 
-Time permitting, I generally try to do my best with providing free support for my plugins.
+Time permitting, the developer generally tries to do his best with providing free support for this plugin.
 
-But, if you try to force that with a low star rating, I can guarantee it will never happen. You are never going to get that help from me that way.
+But, if you try to force that support with a low star rating, it is guaranteed you are not going to get any help. Unfortunately, it's never going to work that way. So, please, do not do it. You are encouraged to provide detailed feedback in the forums and work closely with the dev in order to get problems fixed. Then, feel free to add your review.
 
-If you have already made that mistake because you were not aware of the policy, that's not my problem. You are not getting any help.
+= What should I always bare in mind before asking for support? =
+
+This plugin is Free software. It is developed in the author's free time and is offered without support of any kind. However, the developer tries to do his best to offer support for free in these forums.
+
+You are expected to *collaborate* and act as a *contributor*. Detailed feedback is almost always the key for the quick resolution of any issue. Give the developer time to respond. Acting and expressing demands as if you are the customer or as if the developer is your personal assistant or employee is not a good way to ask for support. In fact, there is very little tolerance for such kind of behavior. Please, do not do it. Fixing all potential issues is just a matter of good collaboration.
 
 
 == Screenshots ==
