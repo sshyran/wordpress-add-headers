@@ -48,7 +48,7 @@ after the time the client accessed the resource, but this is configurable
 (see *configuration* section).
 
 In addition to the *Cache-Control* header, the plugin also sets the *Pragma*
-header to `cache` or `no-cache` according to the defined `max-age` of the
+header to `public` or `no-cache` according to the defined `max-age` of the
 *Cache-Control* header.
 
 = Free License and Donations =
