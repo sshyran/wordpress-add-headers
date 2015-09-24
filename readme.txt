@@ -17,7 +17,7 @@ Adds the *ETag*, *Last-Modified*, *Expires* and *Cache-Control* headers to HTTP 
 
 = Before reading any further =
 
-Before reading any further or trying this plugin on your WordPress platforms and, especially before adding a rating, **make sure** you have thoroughly studied the [FAQ](https://wordpress.org/plugins/add-headers/faq/). This plugin might not be what you think it is. Also, this plugin might not be the right plugin for you.
+Before reading any further or trying this plugin on your WordPress platforms and, especially before adding a rating, please **make sure** you have thoroughly studied the [FAQ](https://wordpress.org/plugins/add-headers/faq/). This plugin might not be what you think it is. Also, this plugin might not be the right plugin for you.
 
 = Why is this plugin useful? =
 
