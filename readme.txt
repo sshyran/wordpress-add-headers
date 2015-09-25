@@ -3,8 +3,8 @@ Contributors: gnotaras
 Donate link: http://bit.ly/wp-add-headers
 Tags: cache, http, headers, web, server, response, optimize, expires, cache-control, last-modified, etag, if-modified-since, if-none-match, if-match, if-range, caching, bandwidth, server load, cpu load, seo
 Requires at least: 3.1.0
-Tested up to: 4.2
-Stable tag: 1.2.0
+Tested up to: 4.4
+Stable tag: 1.2.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -339,6 +339,10 @@ No screenshots are available at this time.
 
 Please check out the changelog of each release by following the links below. You can also check the [roadmap](http://www.codetrax.org/projects/wp-add-headers/roadmap "Add-Headers Roadmap") regarding future releases of the plugin.
 
+- [1.2.1](http://www.codetrax.org/versions/243)
+ - Instead of `Pragma: cache`, now sends `Pragma: public`. This is not included in any standard. The `public` value is used by convention.
+ - The array that holds the headers just before sending them to the clients now has proper keys for easier header isolation when filtering.
+ - Fixed a small bug that happened whenever a taxonomy archive without any posts was visited.
 - [1.2.0](http://www.codetrax.org/versions/242)
  - New option added: `cache_max_age_seconds_for_authenticated_users` initially set to 0 seconds. If you need cached content for authenticated users, adjust this accordingly.
  - The `Pragma` header is now also sent with a value of `no-cache` or `cache` according to *Cache-Control* header's `max-age`.
