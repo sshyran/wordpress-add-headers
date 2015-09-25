@@ -6,7 +6,7 @@ REL_FILES = [
     'index.php',
     'AUTHORS',
 	'LICENSE',
-#	'README',
+#	'README.rst',
     'readme.txt',
     'uninstall.php',
 ]
