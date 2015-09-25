@@ -142,6 +142,78 @@ curl -I -L -H "If-Modified-Since: Mon, 16 Dec 2013 10:10:00 GMT" http://example.
 curl -I -L -H "If-None-Match: \"abcdefghijklmn\"" http://example.org/sample-page/
 `
 
+= Configuration Examples =
+
+The following code snippets can be added in the the theme's `functions.php` file or in a plugin with customizations.
+
+**Changing the default options**
+
+`
+function addh_custom_options ( $options ) {
+    $options['add_expires_header'] = false;
+    $options['generate_weak_etag'] = true;
+    return $options;
+}
+add_filter( 'addh_options', 'addh_custom_options' );
+`
+
+**Excluding a contact form from being cached**
+
+Assuming that the contact form page's slug is `contact`, making it non cacheable, requires the following configuration:
+
+`
+function addh_options_for_special_pages( $options ) {
+    if ( is_page('contact') ) {
+        $options['cache_max_age_seconds'] = 0;
+    }
+}
+add_filter( 'addh_options', 'addh_options_for_special_pages' );
+`
+
+**Modifying the Cache-Control header format**
+
+The default `Cache-Control` header format is: `public, max-age=%s`
+
+One `%s` placeholder must exist. It is replaced by the number of seconds.
+
+The following will return: `public, max-age=%s, no-transform`
+
+`
+function addh_custom_cache_control_format ( $default ) {
+    return $default . ', no-transform';
+}
+add_filter( 'addh_cache_control_header_format', 'addh_custom_cache_control_format' );
+`
+
+**Add custom headers**
+
+You can use the `addh_headers` filter hook to have access to all the generated headers or add custom headers. For example:
+
+`
+function addh_custom_headers ( $headers ) {
+    $headers[] = 'X-Custom-Header: 1234';
+    return $headers;
+}
+add_filter( 'addh_headers', 'addh_custom_headers' );
+`
+
+**Filter and remove headers**
+
+In this example the `Pragma` header is removed.
+
+`
+function addh_filter_final_headers ( $headers ) {
+    unset($headers['pragma']);
+    //unset($headers['cache-control']);
+    //unset($headers['expires']);
+    //unset($headers['last-modified']);
+    //unset($headers['etag']);
+    return $headers;
+}
+add_filter( 'addh_headers', 'addh_filter_final_headers' );
+`
+
+
 = Development =
 
 The development takes place at:
@@ -229,7 +301,7 @@ Please study the 'Description' page. All the information you need exists there.
 
 The plugin options can be customized by adding a small code snippet in the `functions.php` file of your theme. Moreover, the plugin functionality can be further customized by attaching filtering functions to the available filter hooks.
 
-= I've activated your plugin and my contact form and shopping cart stopped working! =
+= I've activated your plugin and my contact form and shopping cart do not seem to work! =
 
 Add-Headers, by default, makes your web pages cacheable for 86400 seconds (1 day). Consequently, special web pages that might contain elements which must be refreshed on every visit, like captchas and shopping carts, are not going to work correctly with the default settings. It is required to set the `cache_max_age_seconds` option to zero for those pages, so as to prevent them from being cached by caching proxies and web browsers. Please, make sure you check out the configuration examples on the description page.
 
