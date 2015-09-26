@@ -335,7 +335,7 @@ function addh_headers(){
         'add_last_modified_header' => true,
         'add_expires_header' => true,
         'add_cache_control_header' => true,
-        'cache_max_age_seconds' => 86400,
+        'cache_max_age_seconds' => 0,
         'cache_max_age_seconds_for_search_results' => 0,
         'cache_max_age_seconds_for_authenticated_users' => 0,
         'remove_pre_existing_headers' => false,
