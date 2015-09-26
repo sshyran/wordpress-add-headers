@@ -55,17 +55,6 @@ define( 'ADDH_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 // Store plugin main file path
 define( 'ADDH_PLUGIN_FILE', __FILE__ );
 
-// Import modules
-//require_once( ADDH_PLUGIN_DIR . 'addh-settings.php' );
-
-
-/**
- * Translation Domain
- *
- * Translation files are searched in: wp-content/plugins
- */
-//load_plugin_textdomain('add-headers', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
-
 
 // Helper function that returns an array of supported post types when is_singular()
 function addh_get_supported_post_types_singular() {
