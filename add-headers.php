@@ -303,31 +303,6 @@ function addh_set_headers_for_archive( $options ) {
 
 
 /**
- * Sets headers on the main feed and main comments feed.
- *
- * Note: At the time of writing, WordPress 3.8 feeds already have ETag and
- * Last-Modified headers. Here we add Expires and Cache-Control.
- *
- */
-function addh_set_headers_for_feed( $options ) {
-    $headers_arr = array();
-
-    // Expires (Calculated from client access time, aka current time)
-    $headers_arr['Expires'] = addh_generate_expires_header( null, null, $options );
-    // Cache-Control
-    $headers_arr['Cache-Control'] = addh_generate_cache_control_header( null, null, $options );
-    // Pragma
-    $headers_arr['Pragma'] = addh_generate_pragma_header( null, null, $options );
-
-    // Allow filtering of the generated headers
-    $headers_arr = apply_filters( 'addh_headers_feed', $headers_arr );
-
-    // Send headers
-    addh_send_headers( $headers_arr );
-}
-
-
-/**
  * Main function.
  */
 function addh_headers(){
@@ -351,8 +326,13 @@ function addh_headers(){
     }
 
     // Feeds
+    // Note: At the time of writing, WordPress 3.8 feeds already have ETag and
+    // Last-Modified headers. Here we reprocess them and add our own.
+    // One problem with the default feed ETag, it is the same for RSS and Atom
+    // and possibly other feed types, which is not the right way to do it.
     if ( is_feed() ) {
-        addh_set_headers_for_feed( $options );
+        // Process feeds as archives
+        addh_set_headers_for_archive( $options );
     }
 
     // Adds headers to:
