@@ -96,15 +96,27 @@ function addh_get_supported_post_types_archive() {
 
 
 // Send headers to client
-function addh_send_headers( $headers_arr ) {
+function addh_send_headers( $headers_arr, $options ) {
+    if ( empty($headers_arr) ) {
+        return;
+    }
     // First check if headers have already been sent and, if yes, generate friendly warning.
     if ( headers_sent() ) {
         $warning_message = 'Add-Headers tried to append its headers to the headers list, but the header list had already been sent to the client by other code. This is not a problem caused by the Add-Headers plugin. Moreover, the Add-Headers plugin can do nothing about this issue. Please investigate which plugin or theme sends the headers earlier than what is expected.';
         trigger_error($warning_message, E_USER_WARNING);
         return;
     }
-    if ( empty($headers_arr) ) {
-        return;
+    // Clean up pre-existing headers
+    if ( array_key_exists('remove_pre_existing_headers', $options) && $options['remove_pre_existing_headers'] === true ) {
+        $current_headers = headers_list();
+        $supported_headers = array('ETag', 'Last-Modified', 'Expires', 'Cache-Control', 'Pragma');
+        foreach ($current_headers as $current_header ) {
+            foreach ($supported_headers as $supported_header) {
+                if ( strpos($current_header, $supported_header) === false ) {
+                    header_remove($supported_header);
+                }
+            }
+        }
     }
     // Send the headers
     foreach ( $headers_arr as $header_name => $header_value ) {
@@ -205,7 +217,7 @@ function addh_batch_generate_headers( $post, $mtime, $options ) {
     $headers_arr = apply_filters( 'addh_headers', $headers_arr );
 
     // Send headers
-    addh_send_headers( $headers_arr );
+    addh_send_headers( $headers_arr, $options );
 }
 
 
@@ -307,6 +319,15 @@ function addh_set_headers_for_archive( $options ) {
  */
 function addh_headers(){
 
+    // Notes
+    //
+    // 1. WordPress by default generates the ETag and Last-Modified headers for feeds.
+    // If 'add_etag_header' and/or 'add_last_modified_header' has been set to 'false',
+    // then an ETag header and/or a Last-Modified header might appear in the response.
+    // These are not added by Add-Headers, but by WordPress. To get rid of them,
+    // you will have to enable the 'remove_pre_existing_headers' option,
+    // which deletes any of the headers (supported by this plugin) before adding its own.
+
     // Options
     $default_options = array(
         'add_etag_header' => true,
@@ -317,6 +338,7 @@ function addh_headers(){
         'cache_max_age_seconds' => 86400,
         'cache_max_age_seconds_for_search_results' => 0,
         'cache_max_age_seconds_for_authenticated_users' => 0,
+        'remove_pre_existing_headers' => false,
     );
     $options = apply_filters( 'addh_options', $default_options );
 
