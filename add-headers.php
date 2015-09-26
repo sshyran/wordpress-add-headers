@@ -321,8 +321,8 @@ function addh_set_headers_for_feed( $options ) {
 /**
  * Main function.
  */
-function addh_headers( $buffer ){
-    
+function addh_headers(){
+
     // Options
     $default_options = array(
         'add_etag_header' => true,
@@ -365,24 +365,17 @@ function addh_headers( $buffer ){
         addh_set_headers_for_archive( $options );
     }
 
-    return $buffer;
 }
 
 
-// See this page for what this workaround is about:
-// http://stackoverflow.com/questions/12608881/wordpress-redirect-issue-headers-already-sent
-// Possibly related:
-// http://wordpress.stackexchange.com/questions/16547/wordpress-plugin-development-headers-already-sent-message
-// http://stackoverflow.com/questions/8677901/cannot-modify-header-information-with-mail-and-header-php-with-ob-start
-// How WP boots: http://theme.fm/2011/10/wordpress-internals-how-wordpress-boots-up-part-3-2673/
-function addh_add_ob_start(){
-    ob_start('addh_headers');
-}
-function addh_flush_ob_end(){
-    ob_end_flush();
-}
-add_action('init', 'addh_add_ob_start');
-//add_action('wp', 'addh_flush_ob_end');
-add_action('wp_footer', 'addh_flush_ob_end');
+// Action hooks - order of running
+// * https://codex.wordpress.org/Plugin_API/Action_Reference
+// Also see action hooks:
+// * https://codex.wordpress.org/Plugin_API/Action_Reference/send_headers
+// * https://codex.wordpress.org/Plugin_API/Action_Reference/wp
+// * https://codex.wordpress.org/Plugin_API/Action_Reference/template_redirect
+// * https://codex.wordpress.org/Plugin_API/Action_Reference/posts_selection
+//
+// http://wordpress.stackexchange.com/a/20193
+add_action('template_redirect', 'addh_headers');
 
-?>
