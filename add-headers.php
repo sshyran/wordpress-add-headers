@@ -27,7 +27,7 @@ License: GPLv3
  *
  *  Licensing Information
  *
- *  Copyright 2013 George Notaras <gnot@g-loaded.eu>, CodeTRAX.org
+ *  Copyright 2013-2015 George Notaras <gnot@g-loaded.eu>, CodeTRAX.org
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
