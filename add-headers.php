@@ -319,6 +319,13 @@ function addh_set_headers_for_archive( $options ) {
  */
 function addh_headers(){
 
+    // Early checks
+
+    // If it's an ajax call, stop here.
+    if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+        return;
+    }
+
     // Notes
     //
     // 1. WordPress by default generates the ETag and Last-Modified headers for feeds.
