@@ -97,10 +97,19 @@ function addh_get_supported_post_types_archive() {
 
 // Send headers to client
 function addh_send_headers( $headers_arr ) {
-    foreach ( $headers_arr as $header_data ) {
-        $header_data = trim($header_data);
-        if ( ! empty($header_data) ) {
-            header( $header_data );
+    // First check if headers have already been sent and, if yes, generate friendly warning.
+    if ( headers_sent() ) {
+        $warning_message = 'Add-Headers tried to append its headers to the headers list, but the header list had already been sent to the client by other code. This is not a problem caused by the Add-Headers plugin. Moreover, the Add-Headers plugin can do nothing about this issue. Please investigate which plugin or theme sends the headers earlier than what is expected.';
+        trigger_error($warning_message, E_USER_WARNING);
+        return;
+    }
+    if ( empty($headers_arr) ) {
+        return;
+    }
+    // Send the headers
+    foreach ( $headers_arr as $header_name => $header_value ) {
+        if ( ! empty($header_name) && ! empty($header_value) ) {
+            header( sprintf('%s: %s', $header_name, $header_value) );
         }
     }
 }
@@ -117,9 +126,9 @@ function addh_generate_etag_header( $post, $mtime, $options ) {
         $header_etag_value = sha1( serialize( $to_hash ) );
         // Generate a weak or strong ETag
         if ( $options['generate_weak_etag'] === true ) {
-            return sprintf( 'ETag: W/"%s"', $header_etag_value );
+            return sprintf( 'W/"%s"', $header_etag_value );
         } else {
-            return sprintf( 'ETag: "%s"', $header_etag_value );
+            return sprintf( '"%s"', $header_etag_value );
         }
     }
 }
@@ -129,7 +138,7 @@ function addh_generate_etag_header( $post, $mtime, $options ) {
 function addh_generate_last_modified_header( $post, $mtime, $options ) {
     if ( $options['add_last_modified_header'] === true ) {
         $header_last_modified_value = str_replace( '+0000', 'GMT', gmdate('r', $mtime) );
-        return 'Last-Modified: ' . $header_last_modified_value;
+        return $header_last_modified_value;
     }
 }
 
@@ -139,7 +148,7 @@ function addh_generate_expires_header( $post, $mtime, $options ) {
     if ( $options['add_expires_header'] === true ) {
         // See also:  $current_time_gmt = (int) gmdate('U');
         $header_expires_value = str_replace( '+0000', 'GMT', gmdate('r', time() + $options['cache_max_age_seconds'] ) );
-        return 'Expires: ' . $header_expires_value;
+        return $header_expires_value;
     }
 }
 
@@ -151,9 +160,9 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
             $default_cache_control_template = 'public, max-age=%s';
             $cache_control_template = apply_filters( 'addh_cache_control_header_format', $default_cache_control_template );
             $header_cache_control_value = sprintf( $cache_control_template, $options['cache_max_age_seconds'] );
-            return 'Cache-Control: ' . $header_cache_control_value;
+            return $header_cache_control_value;
         } else {
-            return 'Cache-Control: no-cache, must-revalidate, max-age=0';
+            return 'no-cache, must-revalidate, max-age=0';
         }
     }
 }
@@ -167,9 +176,9 @@ function addh_generate_cache_control_header( $post, $mtime, $options ) {
 function addh_generate_pragma_header( $post, $mtime, $options ) {
     if ( $options['add_cache_control_header'] === true ) {
         if ( intval($options['cache_max_age_seconds']) > 0 ) {
-            return 'Pragma: public';
+            return 'public';
         } else {
-            return 'Pragma: no-cache';
+            return 'no-cache';
         }
     }
 }
@@ -183,15 +192,15 @@ function addh_batch_generate_headers( $post, $mtime, $options ) {
     $headers_arr = array();
 
     // ETag
-    $headers_arr['etag'] = addh_generate_etag_header( $post, $mtime, $options );
+    $headers_arr['ETag'] = addh_generate_etag_header( $post, $mtime, $options );
     // Last-Modified
-    $headers_arr['last-modified'] = addh_generate_last_modified_header( $post, $mtime, $options );
+    $headers_arr['Last-Modified'] = addh_generate_last_modified_header( $post, $mtime, $options );
     // Expires (Calculated from client access time, aka current time)
-    $headers_arr['expires'] = addh_generate_expires_header( $post, $mtime, $options );
+    $headers_arr['Expires'] = addh_generate_expires_header( $post, $mtime, $options );
     // Cache-Control
-    $headers_arr['cache-control'] = addh_generate_cache_control_header( $post, $mtime, $options );
+    $headers_arr['Cache-Control'] = addh_generate_cache_control_header( $post, $mtime, $options );
     // Pragma
-    $headers_arr['pragma'] = addh_generate_pragma_header( $post, $mtime, $options );
+    $headers_arr['Pragma'] = addh_generate_pragma_header( $post, $mtime, $options );
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers', $headers_arr );
 
@@ -304,11 +313,11 @@ function addh_set_headers_for_feed( $options ) {
     $headers_arr = array();
 
     // Expires (Calculated from client access time, aka current time)
-    $headers_arr['expires'] = addh_generate_expires_header( null, null, $options );
+    $headers_arr['Expires'] = addh_generate_expires_header( null, null, $options );
     // Cache-Control
-    $headers_arr['cache-control'] = addh_generate_cache_control_header( null, null, $options );
+    $headers_arr['Cache-Control'] = addh_generate_cache_control_header( null, null, $options );
     // Pragma
-    $headers_arr['pragma'] = addh_generate_pragma_header( null, null, $options );
+    $headers_arr['Pragma'] = addh_generate_pragma_header( null, null, $options );
 
     // Allow filtering of the generated headers
     $headers_arr = apply_filters( 'addh_headers_feed', $headers_arr );
