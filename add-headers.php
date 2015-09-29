@@ -361,7 +361,7 @@ function addh_headers(){
     }
     
     // Adds headers to:
-    // - Category, tag, author, date based archives, custom taxonomy arechives.
+    // - Category, Tag, other Taxonomy Term, custom post type archive, Author and Date-based archives.
     // - Search results
     // - Default front page displaying the latest posts
     // - Static page displaying the latest posts
