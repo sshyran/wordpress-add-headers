@@ -4,7 +4,7 @@ Donate link: http://bit.ly/wp-add-headers
 Tags: caching, headers, expires, cache-control, last-modified, etag, seo, if-modified-since, if-none-match, if-match, if-range, cache, http, web, server, response, optimize, bandwidth, server load, cpu load
 Requires at least: 3.1.0
 Tested up to: 4.4
-Stable tag: 1.2.1
+Stable tag: 2.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -68,6 +68,12 @@ No screenshots are available at this time.
 
 Please check out the changelog of each release by following the links below. You can also check the [roadmap](http://www.codetrax.org/projects/wp-add-headers/roadmap "Add-Headers Roadmap") regarding future releases of the plugin.
 
+- [2.0.0](http://www.codetrax.org/versions/313)
+ - IMPORTANT CHANGE OF THE DEFAULT FUNCTIONALITY: Since the v2.0.0 major release, no page is allowed to be cached by default. Caching needs to be enabled by [configuring](http://www.codetrax.org/projects/wp-add-headers/wiki/Configuration) the plugin.
+ - Improved the header generation mechanism.
+ - The function that is attached to the `addh_cache_control_header_format` filter hook now, apart from the header template, also accepts the post object.
+ - Added the `remove_pre_existing_headers` option. When enabled, it instructs the plugin to clear any preexisting ETag, Last-Modified, Expires, Cache-Control and Pragma headers before sending its own headers, according to the user defined options.
+ - Other minor fixes and improvements.
 - [1.2.1](http://www.codetrax.org/versions/243)
  - Instead of `Pragma: cache`, now sends `Pragma: public`. This is not included in any standard. The `public` value is used by convention.
  - The array that holds the headers just before sending them to the clients now has proper keys for easier header isolation when filtering.
